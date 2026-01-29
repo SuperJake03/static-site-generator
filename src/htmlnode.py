@@ -1,3 +1,6 @@
+from typing import override
+
+
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
@@ -33,3 +36,22 @@ class LeafNode(HTMLNode):
 
     def __repr__(self):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
+
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag=tag, children=children, props=props)
+
+    def to_html(self):
+        if not self.tag:
+            raise ValueError("invalid HTML: no tag")
+        if not self.children:
+            raise ValueError("invalid HTML: no children")
+        html_string = f"<{self.tag}{self.props_to_html()}>"
+        for child in self.children:
+            html_string += child.to_html()
+        html_string += f"</{self.tag}>"
+        return html_string
+
+    def __repr__(self):
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
