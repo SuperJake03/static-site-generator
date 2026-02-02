@@ -30,3 +30,51 @@ def extract_markdown_images(text):
 
 def extract_markdown_links(text):
     return re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.PLAIN:
+            new_nodes.append(old_node)
+            continue
+        images = extract_markdown_images(old_node.text)
+        if not images:
+            new_nodes.append(old_node)
+            continue
+        nodes = []
+        curr_text = old_node.text
+        for text, link in images:
+            parts = curr_text.split(f"![{text}]({link})", 1)
+            if len(parts[0]) != 0:
+                nodes.append(TextNode(parts[0], TextType.PLAIN))
+            nodes.append(TextNode(text, TextType.IMAGE, link))
+            curr_text = parts[1]
+        if len(curr_text) != 0:
+            nodes.append(TextNode(curr_text, TextType.PLAIN))
+        new_nodes.extend(nodes)
+    return new_nodes
+
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.PLAIN:
+            new_nodes.append(old_node)
+            continue
+        links = extract_markdown_links(old_node.text)
+        if not links:
+            new_nodes.append(old_node)
+            continue
+        nodes = []
+        curr_text = old_node.text
+        for text, link in links:
+            parts = curr_text.split(f"[{text}]({link})", 1)
+            if len(parts[0]) != 0:
+                nodes.append(TextNode(parts[0], TextType.PLAIN))
+            nodes.append(TextNode(text, TextType.LINK, link))
+            curr_text = parts[1]
+        if len(curr_text) != 0:
+            nodes.append(TextNode(curr_text, TextType.PLAIN))
+        new_nodes.extend(nodes)
+    return new_nodes
