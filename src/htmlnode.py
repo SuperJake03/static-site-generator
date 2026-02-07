@@ -9,7 +9,7 @@ class HTMLNode:
         raise NotImplementedError
 
     def props_to_html(self):
-        if not self.props:
+        if self.props is None:
             return ""
         string_rep = []
         for key, value in self.props.items():
@@ -25,9 +25,9 @@ class LeafNode(HTMLNode):
         super().__init__(tag=tag, value=value, props=props)
 
     def to_html(self):
-        if not self.value:
+        if self.value is None:
             raise ValueError("invalid HTML: no value")
-        if not self.tag:
+        if self.tag is None:
             return self.value
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
 
@@ -40,9 +40,9 @@ class ParentNode(HTMLNode):
         super().__init__(tag=tag, children=children, props=props)
 
     def to_html(self):
-        if not self.tag:
+        if self.tag is None:
             raise ValueError("invalid HTML: no tag")
-        if not self.children:
+        if self.children is None:
             raise ValueError("invalid HTML: no children")
         html_string = f"<{self.tag}{self.props_to_html()}>"
         for child in self.children:

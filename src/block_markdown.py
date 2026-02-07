@@ -74,11 +74,15 @@ def heading_to_parent(block):
 
 
 def blockquote_to_parent(block):
-    text = block.replace("> ", "").replace(">", "").replace("\n", " ")
-    children = text_to_children(text)
-    paragraph = ParentNode("p", children)
-    parent = ParentNode("blockquote", children)
-    return parent
+    lines = block.splitlines()
+    new_lines = []
+    for line in lines:
+        if not line.startswith(">"):
+            raise ValueError("invalid quote block")
+        new_lines.append(line.lstrip(">").strip())
+    content = " ".join(new_lines)
+    children = text_to_children(content)
+    return ParentNode("blockquote", children)
 
 
 def unordered_to_parent(block):
