@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from block_markdown import markdown_to_html_node
 
@@ -30,4 +31,12 @@ def generate_page(from_path, template_path, dest_path):
 
 
 def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
-    raise NotImplementedError
+    items = os.listdir(dir_path_content)
+    for item in items:
+        from_path = os.path.join(dir_path_content, item)
+        dest_path = os.path.join(dest_dir_path, item)
+        if os.path.isfile(from_path) and Path(from_path).suffix == ".md":
+            dest_path = Path(dest_path).with_suffix(".html")
+            generate_page(from_path, template_path, dest_path)
+        else:
+            generate_pages_recursive(from_path, template_path, dest_path)
