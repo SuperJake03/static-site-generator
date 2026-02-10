@@ -12,7 +12,10 @@ dir_path_docs = "./docs"
 
 
 def main():
-    basepath = sys.argv[1] + "/" if sys.argv[1] != "" else "/"
+    if len(sys.argv) > 1 and sys.argv[1] != "":
+        basepath = sys.argv[1] + "/"
+    else:
+        basepath = "/"
     copy_files_recursive(dir_path_static, dir_path_docs)
     generate_pages_recursive(
         basepath, dir_path_content, dir_path_template, dir_path_docs
